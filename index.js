@@ -4,8 +4,7 @@ const cors = require('cors')
 require('./config/db')()
 require('dotenv').config()
 
-const UserSchema = require('./models/User')
-const ExerciseSchema = require('./models/Excercise')
+const UserSchema = require('./model/User')
 
 app.use(cors())
 app.use(express.json())
@@ -33,18 +32,65 @@ app.post('/api/users', (req, res) => {
 })
 
 app.get('/api/users/:_id/logs', (req, res) => {
-  const user = req.params._id
+  const { _id, from, to } = req.params
 
+  UserSchema.findById(_id, (err, user) => {
+    if (err) return res.json('Error!')
 
+    if (user) {
+      const { username, log } = user
+
+      let responseLog = [...log]
+
+      if (from) {
+        const fromDate = new Date(from)
+        responseLog = responseLog.filter(exercise => exercise.date > fromDate)
+      }
+
+      if (to) {
+        const toDate = new Date(to)
+        responseLog = responseLog.filter(exercise => exercise.date < toDate)
+      }
+
+      responseLog = responseLog
+        .sort((Exercise1, Exercise2) => Exercise1.date > Exercise2.date)
+        .map(exercise => ({
+          description: exercise.description,
+          duration: exercise.duration,
+          date: exercise.date.toDateString()
+        }))
+
+      const { length: count } = responseLog
+
+      res.json({
+        _id, username, count, log: responseLog
+      })
+    } else {
+      res.json('Unknown user')
+    }
+  })
 })
 
 app.post('/api/users/:_id/exercises', (req, res) => {
-  const { id, description, duration, date } = req.body;
-  UserSchema.findById(id, (err, user) => {
-    if (err) return res.json('wrong user')
-    const { username } = user;
-    ExerciseSchema.create({ _id: id, desc: description, duration: duration, date: date })
-    res.json({ _id: id, username: username, description: description, duration: duration, date: date })
+  const { _id, description, duration, date } = req.body;
+
+  const newdate = new Date(date)
+
+  const log = {
+    description,
+    duration,
+    date
+  }
+
+  UserSchema.findByIdAndUpdate(_id, { $push: { log: log } }, { new: true }, (err, user) => {
+    if (err) return res.json("User doesn't exist")
+
+    if (user) {
+      const { username } = user
+      res.json({ _id: id, username: username, description: description, duration: duration, date: newdate.toString() })
+    } else {
+      res.json("Unkown id")
+    }
   })
 })
 
