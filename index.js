@@ -57,7 +57,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
         responseLog = responseLog.filter(exercise => exercise.date < toDate)
       }
 
-      responseLog = responseLog
+      const response = responseLog
         .sort((Exercise1, Exercise2) => Exercise1.date > Exercise2.date)
         .map(exercise => ({
           description: exercise.description,
@@ -65,10 +65,10 @@ app.get('/api/users/:_id/logs', (req, res) => {
           date: exercise.date.toDateString()
         }))
 
-      const { length: count } = responseLog
+      const { length: count } = response
 
       res.json({
-        _id, username, count, log: responseLog
+        username: username, count: count, log: responseLog
       })
     } else {
       res.json('Unknown user')
@@ -77,8 +77,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
 })
 
 app.post('/api/users/:_id/exercises', (req, res) => {
-  const { _id, description, duration, date } = req.body;
-
+  const { id, description, duration, date } = req.body;
   const newdate = new Date(date)
 
   const log = {
@@ -87,7 +86,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     date
   }
 
-  UserSchema.findByIdAndUpdate(_id, { $push: { log: log } }, { new: true }, (err, user) => {
+  UserSchema.findByIdAndUpdate(id, { $push: { log: log } }, { new: true }, (err, user) => {
     if (err) return res.json("User doesn't exist")
 
     if (user) {
