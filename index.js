@@ -25,8 +25,13 @@ app.get('/api/users', async (req, res) => {
 app.post('/api/users', (req, res) => {
   const { username } = req.body
 
-  UserSchema.create({ username: username }, (err) => {
+  UserSchema.create({ username: username }, (err, user) => {
     if (err) return console.error(err)
+
+    return res.json({
+      username: username,
+      _id: user.id
+    })
   })
 
 })
