@@ -37,9 +37,11 @@ app.post('/api/users', (req, res) => {
 })
 
 app.get('/api/users/:_id/logs', (req, res) => {
-  const { _id, from, to } = req.params
+  const { _id } = req.params
+  const { limit, from, to } = req.query
 
-  UserSchema.findById(_id, (err, user) => {
+  const isNumber = Number(limit)
+  UserSchema.findById(_id).limit(isNumber).exec((err, user) => {
     if (err) return res.json('Error!')
 
     if (user) {
@@ -57,7 +59,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
         responseLog = responseLog.filter(exercise => exercise.date < toDate)
       }
 
-      const response = responseLog
+      responseLog
         .sort((Exercise1, Exercise2) => Exercise1.date > Exercise2.date)
         .map(exercise => ({
           description: exercise.description,
@@ -65,7 +67,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
           date: exercise.date.toDateString()
         }))
 
-      const { length: count } = response
+      const { length: count } = responseLog
 
       res.json({
         username: username, count: count, log: responseLog
