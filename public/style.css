@@ -1,27 +1,51 @@
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  font-family:sans-serif;
-  margin: 25px;
+  font-family: "Poppins", sans-serif;
   color: #222;
-  background-color: #f5f5f5;
+  background: linear-gradient(150deg, #a6f7a6 0%, #64cc64 100%);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
   font-weight: bold;
-  
+  font-size: 2rem;
+  text-align: center;
+  margin: 1em 0;
+}
+
+h3 {
+  font-size: 1.3rem;
+  text-align: center;
+  margin-bottom: 1em;
 }
 
 p {
+  text-align: center;
+  margin-bottom: 0.5em;
   max-width: 900px;
+}
+
+#form-container {
+  display: flex;
+  gap: 1em;
+  justify-content: center;
+  width: 100%;
 }
 
 form {
   margin-bottom: 25px;
   padding: 15px;
-  background-color: #87D37C;
+  background-color: #81be77;
   display: inline-block;
   width: 100%;
   max-width: 340px;
@@ -31,29 +55,64 @@ form {
 input {
   display: block;
   margin-bottom: 10px;
-  padding: 5px;
+  padding: 0.5em;
   width: 100%;
-  border: 1px solid lightgrey;
+  border: none;
   border-radius: 3px;
   font-size: 16px;
 }
+input:active {
+  border: 1px solid #fffec4;
+}
 
-input[type=submit] {
+input[type="submit"] {
   font-size: 16px;
+  font-weight: bold;
   border-radius: 3px;
-  background-color: #E4F1FE;
-  border: 1px solid grey;
-  box-shadow: 2px 2px #999;
+  background-color: #e4f1fe;
+  border: none;
   cursor: pointer;
+  transition: background-color 0.2s ease-in;
 }
 
-input[type=submit]:hover {
-  background-color: #FFFEC4;
+input[type="submit"]:hover {
+  background-color: #fffec4;
 }
 
 code {
   font-family: monospace;
+  color: hsl(265, 15%, 22%);
   font-size: 1.2em;
-  background-color: #FFFEC4;
+  background-color: #f8f6ba;
+  text-align: center;
   padding: 2px;
+}
+
+#code {
+  background-color: hsl(265, 15%, 22%);
+  display: flex;
+  color: white;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 3px;
+  padding: 0.5em;
+  width: 50%;
+  margin: 1.5em 0;
+}
+
+footer {
+  padding: 2em;
+  background-color: rgb(27, 22, 22);
+  color: rgb(248, 248, 248);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+a {
+  color: rgb(170, 69, 170);
+  transition: color 0.2s ease-in;
+}
+a:hover {
+  color: rgb(189, 88, 189);
 }
