@@ -40,47 +40,47 @@ app.get('/api/users/:_id/logs', (req, res) => {
   const { _id } = req.params
   const { limit, from, to } = req.query
 
-  const isNumber = Number(limit)
-  UserSchema.findById(_id).limit(isNumber).exec((err, user) => {
+  const convertedToNumber = Number(limit)
+  const fromDate = new Date(from).toDateString()
+  const toDate = new Date(to).toDateString()
+
+  UserSchema.findById(_id, function (err, user) {
     if (err) return res.json('Error!')
 
     if (user) {
       const { username, log } = user
+      let responseLog
 
-      let responseLog = [...log]
-
-      if (from) {
-        const fromDate = new Date(from)
-        responseLog = responseLog.filter(exercise => exercise.date > fromDate)
-      }
-
-      if (to) {
-        const toDate = new Date(to)
-        responseLog = responseLog.filter(exercise => exercise.date < toDate)
-      }
-
-      responseLog
+      responseLog = log
         .sort((Exercise1, Exercise2) => Exercise1.date > Exercise2.date)
         .map(exercise => ({
           description: exercise.description,
           duration: exercise.duration,
-          date: exercise.date.toDateString()
+          date: exercise.date?.toDateString()
         }))
 
       const { length: count } = responseLog
 
+      if (convertedToNumber) {
+        responseLog = responseLog.slice(0, convertedToNumber)
+      }
+
       res.json({
-        username: username, count: count, log: responseLog
+        _id: _id, username: username, count: convertedToNumber || count, log: responseLog
       })
     } else {
       res.json('Unknown user')
     }
-  })
+  }).sort({ logs: -1 }).limit(convertedToNumber)
 })
 
 app.post('/api/users/:_id/exercises', (req, res) => {
   const { id, description, duration, date } = req.body;
-  const newdate = new Date(date)
+  let newDate
+  if (!date) {
+    newDate = new Date()
+  }
+  newDate = new Date(date)
 
   const log = {
     description,
@@ -93,7 +93,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
     if (user) {
       const { username } = user
-      res.json({ _id: id, username: username, description: description, duration: duration, date: newdate.toString() })
+      res.json({ username: username, date: newDate.toDateString(), duration: duration, description: description })
     } else {
       res.json("Unkown id")
     }
