@@ -100,8 +100,8 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     if (err) return res.json("User doesn't exist")
 
     if (user) {
-      const { username } = user
-      res.json({ username: username, date: newDate.toDateString(), duration: duration, description: description })
+      const { username, logs } = user
+      res.json({ _id: id, username: username, date: newDate.toDateString(), duration: duration, description: description })
     } else {
       res.json("Unkown id")
     }
